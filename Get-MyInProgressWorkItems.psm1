@@ -78,10 +78,15 @@ function CheckIfMustPrintHelp($printHelp) {
 
 # Check, request and store mandatory parameters
 function CheckRequestAndStoreMandatoryParameters($arguments) {
-	$updateFile = $false;
+	$updateFile = $false
 
-    $curlIsMissing = (get-alias curl 2> $null) -ne $null
-    if ($curlIsMissing -eq $true) {
+	# This command must be executed four times in order to the curl alias be successfully removed
+	If (Test-Path Alias:curl) {Remove-Item Alias:curl}
+	If (Test-Path Alias:curl) {Remove-Item Alias:curl}	
+	If (Test-Path Alias:curl) {Remove-Item Alias:curl}	
+	If (Test-Path Alias:curl) {Remove-Item Alias:curl}	
+	
+    if (Test-Path Alias:curl) {
         Write-Host 'You need to remove the curl alias and install the real curl utility in order to run this script!'
         return $false
     }
