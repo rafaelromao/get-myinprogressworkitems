@@ -6,8 +6,11 @@ function ParseArguments($input_args) {
     $local:fileExists = Test-Path $local:fileName
 	if ($local:fileExists -eq $true) {
 		$result = Get-Content -Raw -Path $local:fileName | ConvertFrom-Json
+		$result.printHelp = $false;
+		$result.debug = $false;
 	} else {
 		$result = New-Object System.Object
+		$result | Add-Member -type NoteProperty -name debug -value $false
 		$result | Add-Member -type NoteProperty -name printHelp -value $false
 		$result | Add-Member -type NoteProperty -name doNotCopyToClipboard -value $false
 		$result | Add-Member -type NoteProperty -name user -value $null
@@ -24,6 +27,10 @@ function ParseArguments($input_args) {
 		$nextArg = $null
 		if ($hasNextArg) {
 			$nextArg = $input_args[$i+1]
+		}
+
+		if ($arg -eq "--debug" -or $arg -eq "-D") {
+			$result.debug = $true
 		}
 
 		if ($arg -eq "--help" -or $arg -eq "-h") {
@@ -126,6 +133,13 @@ function CheckRequestAndStoreMandatoryParameters($arguments) {
 		New-Item $local:fileName -type file
 		$arguments | ConvertTo-Json | out-file -filepath $local:fileName
 	}
+
+	if ($arguments.debug) {
+		Write-Host ""
+		Write-Host ($arguments | ConvertTo-Json)
+		Write-Host ""
+	}
+	
 	return $true
 }
 
@@ -144,17 +158,60 @@ function GetInProgressWorkItemIds($arguments) {
 	$contentType = 'Content-Type: application/json'
 	$baseUri = 'https://' + $arguments.host + '.visualstudio.com/DefaultCollection/'
 	$workItemsQueryUri = $baseUri + $arguments.project + '/_apis/wit/queries/' + $arguments.queryPath
-	$queryId = curl -k -u $arguments.user:$arguments.password -H $contentType $workItemsQueryUri | ConvertFrom-Json | Select-Object -ExpandProperty id
-	$workItemsInProgressIds = curl -k -u $arguments.user:$arguments.password -H $contentType $baseUri + '/' + $arguments.project + '/_apis/wit/wiql/' + $queryId | ConvertFrom-Json | Select-Object -ExpandProperty workItems | Select-Object -ExpandProperty id
+	$auth = $arguments.user + ':' + $arguments.password
+	if ($arguments.debug) {
+		Write-Host "baseUri: $baseUri" 
+		Write-Host "auth: $auth" 
+		Write-Host "contentType: $contentType" 
+		Write-Host "workItemsQueryUri: $workItemsQueryUri" 
+	}
+    $response = curl -k -u $auth -H $contentType $workItemsQueryUri
+	if ($arguments.debug) {
+		Write-Host "response: $response" 
+	}
+	$queryId = $response | ConvertFrom-Json | Select-Object -ExpandProperty id
+	if ($arguments.debug) {
+		Write-Host "queryId: $queryId" 
+	}
+	$workItemsInProgressIdsUri = $baseUri + '/' + $arguments.project + '/_apis/wit/wiql/' + $queryId
+	if ($arguments.debug) {
+		Write-Host "workItemsInProgressIdsUri: $workItemsInProgressIdsUri" 
+	}
+	$workItemsInProgressIds = curl -k -u $auth -H $contentType $workItemsInProgressIdsUri | ConvertFrom-Json | Select-Object -ExpandProperty workItems | Select-Object -ExpandProperty id
+	if ($arguments.debug) {
+		Write-Host "workItemsInProgressIds: $workItemsInProgressIds" 
+	}
 	$workItemsUri = $baseUri + '_apis/wit/workItems?fields=System.Id,System.AssignedTo&ids=' + ($workItemsInProgressIds -join ",")
-	$myInProgressWorkItemsIds = curl -k -u $arguments.user:$arguments.password -H $contentType $workItemsUri | ConvertFrom-Json | Select-Object -ExpandProperty value | Select-Object -ExpandProperty fields | Where-Object -Property System.AssignedTo -like '*' + $arguments.user + '*' | Select-Object -ExpandProperty System.Id
+	if ($arguments.debug) {
+		Write-Host "workItemsUri: $workItemsUri" 
+	}
+	$response = curl -k -u $auth -H $contentType $workItemsUri
+	if ($arguments.debug) {
+		Write-Host "response: $response" 
+	}
+	$filter = '*' + $arguments.user + '*'
+	if ($arguments.debug) {
+		Write-Host "filter: $filter" 
+	}
+	$myInProgressWorkItemsIds = $response | ConvertFrom-Json | Select-Object -ExpandProperty value | Select-Object -ExpandProperty fields | Where-Object -Property System.AssignedTo -like $filter | Select-Object -ExpandProperty System.Id
+	if ($arguments.debug) {
+		Write-Host "myInProgressWorkItemsIds: $myInProgressWorkItemsIds" 
+	}
 	$myInProgressWorkItemsIdsInCommit = '#' + ($myInProgressWorkItemsIds -join " #")
+	if ($arguments.debug) {
+		Write-Host "myInProgressWorkItemsIdsInCommit: $myInProgressWorkItemsIdsInCommit" 
+	}
 	return $myInProgressWorkItemsIdsInCommit
 }
 
 function Get-MyInProgressWorkItems() {
 	# Parse the input arguments
 	$arguments = ParseArguments $args
+	if ($arguments.debug) {
+		Set-PSDebug -Trace 1
+	} else {
+		Set-PSDebug -Trace 0
+	}
 	# Check if the arguments used require the help to be printed
 	$help = CheckIfMustPrintHelp $arguments.printHelp
 	if ($help -ne $true) {
