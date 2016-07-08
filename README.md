@@ -1,8 +1,8 @@
 # Get-MyInProgressWorkItems
-Get the ids of your in progress work items from Visual Studio online and return it as a string to be used in your git commit messages.
+Get the ids of your in progress work items from Visual Studio Online and return it as a string to be used in your git commit messages.
 
 ## Prerequisites
-- cURL installed in place of the default alias `curl` alias used for `Invoke-WebRequest`. See [this link](http://thesociablegeek.com/azure/using-curl-in-powershell/) for details.
+- cURL installed in place of the default `curl` alias used for `Invoke-WebRequest`. See [this link](http://thesociablegeek.com/azure/using-curl-in-powershell/) for details.
 
 ## How to install it
 - Download and unzip this repository
