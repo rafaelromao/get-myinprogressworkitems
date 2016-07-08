@@ -1,10 +1,19 @@
 # Parse the input arguments
 function ParseArguments($input_args) {
 	$defaultQueryPath = "Shared%20Queries/Current%20Sprint/Work%20in%20Progress"
-	if (Test-Path GetUserConfigFileName) {
-		$result = Get-Content -Raw -Path GetUserConfigFileName | ConvertFrom-Json
+	
+	$directoryName = $env:appdata + '/GetInProgressWorkItemIds/'
+	$directoryExists = Test-Path $directoryName
+    if ($directoryExists -eq $false) {
+		New-Item $directoryName -type directory
+	}
+	$fileName = $directoryName + 'user.config'
+	
+	if (Test-Path $fileName) {
+		$result = Get-Content -Raw -Path $fileName | ConvertFrom-Json
 		$result.printHelp = $false;
 		$result.debug = $false;
+		$result.fileName = $fileName;
 	} else {
 		$result = New-Object System.Object
 		$result | Add-Member -type NoteProperty -name debug -value $false
@@ -15,6 +24,7 @@ function ParseArguments($input_args) {
 		$result | Add-Member -type NoteProperty -name host -value $null
 		$result | Add-Member -type NoteProperty -name project -value $null
 		$result | Add-Member -type NoteProperty -name queryPath -value $defaultQueryPath
+		$result | Add-Member -type NoteProperty -name fileName -value $fileName
 	}
 
 	for ($i = 0; $i -lt $input_args.Length; $i++) {
@@ -127,11 +137,11 @@ function CheckRequestAndStoreMandatoryParameters($arguments) {
 		$updateFile = $true;
 	}
 	if ($updateFile) {
-		if (Test-Path GetUserConfigFileName) {
-			Remove-Item GetUserConfigFileName
+		if (Test-Path $arguments.fileName) {
+			Remove-Item $arguments.fileName
 		}
-		New-Item GetUserConfigFileName -type file
-		$arguments | ConvertTo-Json | out-file -filepath GetUserConfigFileName
+		New-Item $arguments.fileName -type file
+		$arguments | ConvertTo-Json | out-file -filepath $arguments.fileName
 	}
 
 	if ($arguments.debug) {
@@ -141,16 +151,6 @@ function CheckRequestAndStoreMandatoryParameters($arguments) {
 	}
 	
 	return $true
-}
-
-function GetUserConfigFileName() {
-	$local:directoryName = $env:appdata + '/GetInProgressWorkItemIds/'
-	$local:directoryExists = Test-Path $local:directoryName
-    if ($local:directoryExists -eq $false) {
-		New-Item $local:directoryName -type directory
-	}
-	$local:fileName = $local:directoryName + 'user.config'
-	return $local:fileName
 }
 
 # Get the ids of the work items in progress
