@@ -1,11 +1,8 @@
 # Parse the input arguments
 function ParseArguments($input_args) {
 	$defaultQueryPath = "Shared%20Queries/Current%20Sprint/Work%20in%20Progress"
-	$local:fileName = GetUserConfigFileName
-	
-    $local:fileExists = Test-Path $local:fileName
-	if ($local:fileExists -eq $true) {
-		$result = Get-Content -Raw -Path $local:fileName | ConvertFrom-Json
+	if (Test-Path GetUserConfigFileName) {
+		$result = Get-Content -Raw -Path GetUserConfigFileName | ConvertFrom-Json
 		$result.printHelp = $false;
 		$result.debug = $false;
 	} else {
@@ -20,7 +17,7 @@ function ParseArguments($input_args) {
 		$result | Add-Member -type NoteProperty -name queryPath -value $defaultQueryPath
 	}
 
-	For ($i = 0; $i -lt $input_args.Length; $i++) {
+	for ($i = 0; $i -lt $input_args.Length; $i++) {
 		# Parse the current and next arguments
 		$arg = $input_args[$i]
 		$hasNextArg = $i -lt $input_args.Length-1
