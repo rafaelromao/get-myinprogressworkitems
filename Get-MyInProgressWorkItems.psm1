@@ -165,7 +165,7 @@ function GetInProgressWorkItemIds($arguments) {
 		Write-Host "contentType: $contentType" 
 		Write-Host "workItemsQueryUri: $workItemsQueryUri" 
 	}
-    $response = curl -k -u $auth -H $contentType $workItemsQueryUri
+    $response = curl -k -u $auth -H $contentType $workItemsQueryUri 2> $null
 	if ($arguments.debug) {
 		Write-Host "response: $response" 
 	}
@@ -177,7 +177,11 @@ function GetInProgressWorkItemIds($arguments) {
 	if ($arguments.debug) {
 		Write-Host "workItemsInProgressIdsUri: $workItemsInProgressIdsUri" 
 	}
-	$workItemsInProgressIds = curl -k -u $auth -H $contentType $workItemsInProgressIdsUri | ConvertFrom-Json | Select-Object -ExpandProperty workItems | Select-Object -ExpandProperty id
+    $response = curl -k -u $auth -H $contentType $workItemsInProgressIdsUri 2> $null
+	if ($arguments.debug) {
+		Write-Host "response: $response" 
+	}
+	$workItemsInProgressIds = $response | ConvertFrom-Json | Select-Object -ExpandProperty workItems | Select-Object -ExpandProperty id
 	if ($arguments.debug) {
 		Write-Host "workItemsInProgressIds: $workItemsInProgressIds" 
 	}
@@ -185,7 +189,7 @@ function GetInProgressWorkItemIds($arguments) {
 	if ($arguments.debug) {
 		Write-Host "workItemsUri: $workItemsUri" 
 	}
-	$response = curl -k -u $auth -H $contentType $workItemsUri
+	$response = curl -k -u $auth -H $contentType $workItemsUri 2> $null
 	if ($arguments.debug) {
 		Write-Host "response: $response" 
 	}
@@ -198,6 +202,9 @@ function GetInProgressWorkItemIds($arguments) {
 		Write-Host "myInProgressWorkItemsIds: $myInProgressWorkItemsIds" 
 	}
 	$myInProgressWorkItemsIdsInCommit = '#' + ($myInProgressWorkItemsIds -join " #")
+	if ($myInProgressWorkItemsIdsInCommit -eq '#') {
+		$myInProgressWorkItemsIdsInCommit = $null
+	}
 	if ($arguments.debug) {
 		Write-Host "myInProgressWorkItemsIdsInCommit: $myInProgressWorkItemsIdsInCommit" 
 	}
@@ -205,12 +212,11 @@ function GetInProgressWorkItemIds($arguments) {
 }
 
 function Get-MyInProgressWorkItems() {
+	Set-PSDebug -Off
 	# Parse the input arguments
 	$arguments = ParseArguments $args
 	if ($arguments.debug) {
 		Set-PSDebug -Trace 1
-	} else {
-		Set-PSDebug -Trace 0
 	}
 	# Check if the arguments used require the help to be printed
 	$help = CheckIfMustPrintHelp $arguments.printHelp
