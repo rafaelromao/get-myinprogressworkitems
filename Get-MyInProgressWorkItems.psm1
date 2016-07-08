@@ -90,8 +90,13 @@ function CheckRequestAndStoreMandatoryParameters($arguments) {
 	If (Test-Path Alias:curl) {Remove-Item Alias:curl}	
 	If (Test-Path Alias:curl) {Remove-Item Alias:curl}	
 	
+	$curl = Get-Command "curl" -ErrorAction SilentlyContinue
     if (Test-Path Alias:curl) {
-        Write-Host 'You need to remove the curl alias and install the real curl utility in order to run this script!'
+        Write-Host 'You need to remove the curl alias in order to run this script!'
+        return $false
+    }
+    if ($curl -eq $null) {
+        Write-Host 'You need to install the real curl utility in order to run this script!'
         return $false
     }
 
