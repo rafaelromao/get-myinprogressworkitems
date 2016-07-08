@@ -127,13 +127,11 @@ function CheckRequestAndStoreMandatoryParameters($arguments) {
 		$updateFile = $true;
 	}
 	if ($updateFile) {
-		$local:fileName = GetUserConfigFileName
-        $local:fileExists = Test-Path $local:fileName
-		if ($local:fileExists -eq $true) {
-			Remove-Item $local:fileName
+		if (Test-Path GetUserConfigFileName) {
+			Remove-Item GetUserConfigFileName
 		}
-		New-Item $local:fileName -type file
-		$arguments | ConvertTo-Json | out-file -filepath $local:fileName
+		New-Item GetUserConfigFileName -type file
+		$arguments | ConvertTo-Json | out-file -filepath GetUserConfigFileName
 	}
 
 	if ($arguments.debug) {
@@ -228,10 +226,11 @@ function Get-MyInProgressWorkItems() {
 		if ($validated -eq $true) {
 			# Get the ids of the work items in progress
 			$result = GetInProgressWorkItemIds $arguments
-			# Return the ids
+			# Save ids to clipboard
 			if ($arguments.doNotCopyToClipboard -ne $true) {
-				[Windows.Forms.Clipboard]::SetText($result)
+				$result | clip
 			}
+			# Return the ids
 			Write-Host $result
 		}
 	}
