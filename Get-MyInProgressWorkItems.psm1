@@ -25,6 +25,7 @@ function ParseArguments($input_args) {
 		$result | Add-Member -type NoteProperty -name project -value $null
 		$result | Add-Member -type NoteProperty -name queryPath -value $defaultQueryPath
 		$result | Add-Member -type NoteProperty -name fileName -value $fileName
+        $result | Add-Member -type NoteProperty -name commitMessage -value $null
 	}
 
 	for ($i = 0; $i -lt $input_args.Length; $i++) {
@@ -67,13 +68,17 @@ function ParseArguments($input_args) {
 		if ($arg -eq "--queryPath" -or $arg -eq "-q") {
 			$result.queryPath = "$($nextArg)"
 		}
+
+		if ($arg -eq "--commitMessage" -or $arg -eq "-m") {
+			$result.queryPath = "$($nextArg)"
+		}
 	}
 
 	return $result
 }
 
 # Check if the arguments used require the help to be printed
-function CheckIfMustPrintHelp($printHelp) {
+function CheckIfMustPrintHelp($printHelp, $hasCommitMessage) {
 	if ($printHelp) {
 		Write-Host ""
 		Write-Host "--help `t`t`t -h `t Print usage options"
@@ -83,6 +88,9 @@ function CheckIfMustPrintHelp($printHelp) {
 		Write-Host "--host `t`t`t -h `t Inform your Visual Studio online host"
 		Write-Host "--project `t`t -r `t Inform your current project"
 		Write-Host "--queryPath `t`t -q `t Inform path of the query used to get the in progress work items in your current project"
+        if ($hasCommitMessage) {
+            Write-Host "--commitMessage `t -m `t Inform the commit message to be used in the git commit command"
+        }
 		Write-Host "`t`t`t`t Default: Shared%20Queries/Current%20Sprint/Work%20in%20Progress"
 		Write-Host ""
 		return $true
@@ -211,15 +219,12 @@ function GetInProgressWorkItemIds($arguments) {
 	return $myInProgressWorkItemsIdsInCommit
 }
 
-function Get-MyInProgressWorkItems() {
-	Set-PSDebug -Off
-	# Parse the input arguments
-	$arguments = ParseArguments $args
+function Get-MyInProgressWorkItemsWithArguments($arguments, $hasCommitMessage) {
 	if ($arguments.debug) {
 		Set-PSDebug -Trace 1
 	}
 	# Check if the arguments used require the help to be printed
-	$help = CheckIfMustPrintHelp $arguments.printHelp
+	$help = CheckIfMustPrintHelp $arguments.printHelp $hasCommitMessage
 	if ($help -ne $true) {
 		# Check, request and store mandatory parameters
 		$validated = CheckRequestAndStoreMandatoryParameters $arguments
@@ -231,7 +236,29 @@ function Get-MyInProgressWorkItems() {
 				$result | clip
 			}
 			# Return the ids
-			Write-Host $result
+			return $result
 		}
 	}
+}
+
+function Get-MyInProgressWorkItems() {
+	Set-PSDebug -Off
+	$arguments = ParseArguments $args
+    $ids = Get-MyInProgressWorkItemsWithArguments $arguments
+    return $ids
+}
+
+function Submit-MyInProgressWorkItems() {
+	Set-PSDebug -Off
+	$arguments = ParseArguments $args
+    $ids = Get-MyInProgressWorkItemsWithArguments $arguments $true
+    if ($arguments.printHelp -eq $false) {
+        if ($ids -eq $null) {
+            Write-Host "Could not find any in progress work item!"
+        }
+        else {
+            $lastcommitmessage = $arguments.commitMessage
+            git commit -m "$lastcommitmessage $ids"
+        }
+    }
 }
