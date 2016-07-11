@@ -33,6 +33,7 @@ if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkIt
 ```
 
 If you need to load your profile manually, enter: `. $profile`.
+If you use [Cmder](http://www.cmder.net), see [this](https://github.com/cmderdev/cmder/issues/505).
 
 ### Getting your in progress work item ids
 
