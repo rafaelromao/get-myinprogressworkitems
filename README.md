@@ -10,8 +10,29 @@ Get the ids of your in progress work items from Visual Studio Online and return 
 
 ## How to use it?
 It is recommended to register an alias like `inpid` in your PowerShell profile:
-In your [profile](http://thesociablegeek.com/azure/using-curl-in-powershell/), add the following command:
-`new-alias inpid Get-MyInProgressWorkItems`.
+
+### Editing your Powershell profile
+To check if you have a powershell profile, enter: `Test-Path $profile`. If it returns False, you need to create a profile.
+
+To create a powershell profile, enter: `New-Item $profile -force -itemtype file`.
+
+To edit your powershell profile, enter: `notepad $profile`.
+
+Insert the following lines to ensure you will have the default `curl` alias removed and the new `inpid` alias registered every time you open the PowerShell console.
+
+```
+if (test-path alias:curl) { remove-item alias:curl }
+if (test-path alias:curl) { remove-item alias:curl }
+if (test-path alias:curl) { remove-item alias:curl }
+if (test-path alias:curl) { remove-item alias:curl }
+
+if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
+if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
+if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
+if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
+```
+
+### Getting your in progress work item ids
 
 In PowerShell, just type `Get-MyInProgressWorkItems`, or `inpid` and inform the required parameters.
 
