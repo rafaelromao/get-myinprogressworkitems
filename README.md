@@ -34,10 +34,10 @@ if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkIt
 if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
 if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
 
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
 ```
 
 If you need to load your profile manually, enter: `. $profile`.
