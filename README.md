@@ -78,5 +78,5 @@ In your first call, some parameters must be informed. After that, they are store
 
 *Submit-MyInProgressWorkItems* only
 
-`-Inform the commit message to be used in the git commit command`
+- Inform the commit message to be used in the git commit command
 `--commitMessage`or `-m`
