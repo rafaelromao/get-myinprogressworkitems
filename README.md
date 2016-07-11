@@ -9,7 +9,7 @@ Get the ids of your in progress work items from Visual Studio Online and return 
 - Run Install-Module.bat to install the module on powershell
 
 ## How to use it?
-It is recommended to register an alias like `inpid` in your PowerShell profile:
+It is recommended to register an alias like `inpid` in your PowerShell profile.
 
 ### Editing your Powershell profile
 To check if you have a powershell profile, enter: `Test-Path $profile`. If it returns False, you need to create a profile.
