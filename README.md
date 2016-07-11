@@ -32,6 +32,8 @@ if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkIt
 if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
 ```
 
+If you need to load your profile manually, enter: `. $profile`.
+
 ### Getting your in progress work item ids
 
 In PowerShell, just type `Get-MyInProgressWorkItems`, or `inpid` and inform the required parameters.
