@@ -34,10 +34,10 @@ if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkIt
 if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
 if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
 
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias inpid Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
+if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
 ```
 
 If you need to load your profile manually, enter: `. $profile`.
@@ -78,5 +78,5 @@ In your first call, some parameters must be informed. After that, they are store
 
 *Submit-MyInProgressWorkItems* only
 
-`-Inform the commit message to be used in the git commit command`
+- Inform the commit message to be used in the git commit command
 `--commitMessage`or `-m`
