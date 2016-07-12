@@ -70,7 +70,7 @@ function ParseArguments($input_args) {
 		}
 
 		if ($arg -eq "--commitMessage" -or $arg -eq "-m") {
-			$result.queryPath = "$($nextArg)"
+			$result.commitMessage = "$($nextArg)"
 		}
 	}
 
