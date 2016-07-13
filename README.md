@@ -24,6 +24,8 @@ To edit your powershell profile, enter: `notepad $profile`.
 Insert the following lines to ensure you will have the default `curl` alias removed and the new `inpid` alias registered every time you open the PowerShell console.
 
 ```
+Import-Module Get-MyInProgressWorkItems
+
 if (test-path alias:curl) { remove-item alias:curl }
 if (test-path alias:curl) { remove-item alias:curl }
 if (test-path alias:curl) { remove-item alias:curl }
