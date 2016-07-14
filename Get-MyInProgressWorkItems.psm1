@@ -5,7 +5,7 @@ function ParseArguments($input_args) {
 	$directoryName = $env:appdata + '/GetInProgressWorkItemIds/'
 	$directoryExists = Test-Path $directoryName
     if ($directoryExists -eq $false) {
-		New-Item $directoryName -type directory
+		New-Item $directoryName -type directory | out-null
 	}
 	$fileName = $directoryName + 'user.config'
 	
@@ -177,9 +177,12 @@ function GetInProgressWorkItemIds($arguments) {
 	if ($arguments.debug) {
 		Write-Host "response: $response" 
 	}
-	$queryId = $response | ConvertFrom-Json | Select-Object -ExpandProperty id
+	$queryId = $response | ConvertFrom-Json | Select-Object -ExpandProperty id 2> $null
 	if ($arguments.debug) {
 		Write-Host "queryId: $queryId" 
+	}
+	if ($queryId -eq $null) {
+		return $null
 	}
 	$workItemsInProgressIdsUri = $baseUri + '/' + $arguments.project + '/_apis/wit/wiql/' + $queryId
 	if ($arguments.debug) {
@@ -189,9 +192,12 @@ function GetInProgressWorkItemIds($arguments) {
 	if ($arguments.debug) {
 		Write-Host "response: $response" 
 	}
-	$workItemsInProgressIds = $response | ConvertFrom-Json | Select-Object -ExpandProperty workItems | Select-Object -ExpandProperty id
+	$workItemsInProgressIds = $response | ConvertFrom-Json | Select-Object -ExpandProperty workItems | Select-Object -ExpandProperty id 2> $null
 	if ($arguments.debug) {
 		Write-Host "workItemsInProgressIds: $workItemsInProgressIds" 
+	}
+	if ($workItemsInProgressIds -eq $null) {
+		return $null
 	}
 	$workItemsUri = $baseUri + '_apis/wit/workItems?fields=System.Id,System.AssignedTo&ids=' + ($workItemsInProgressIds -join ",")
 	if ($arguments.debug) {
@@ -205,14 +211,14 @@ function GetInProgressWorkItemIds($arguments) {
 	if ($arguments.debug) {
 		Write-Host "filter: $filter" 
 	}
-	$myInProgressWorkItemsIds = $response | ConvertFrom-Json | Select-Object -ExpandProperty value | Select-Object -ExpandProperty fields | Where-Object -Property System.AssignedTo -like $filter | Select-Object -ExpandProperty System.Id
+	$myInProgressWorkItemsIds = $response | ConvertFrom-Json | Select-Object -ExpandProperty value | Select-Object -ExpandProperty fields | Where-Object -Property System.AssignedTo -like $filter | Select-Object -ExpandProperty System.Id 2> $null
 	if ($arguments.debug) {
 		Write-Host "myInProgressWorkItemsIds: $myInProgressWorkItemsIds" 
 	}
-	$myInProgressWorkItemsIdsInCommit = '#' + ($myInProgressWorkItemsIds -join " #")
-	if ($myInProgressWorkItemsIdsInCommit -eq '#') {
-		$myInProgressWorkItemsIdsInCommit = $null
+	if ($myInProgressWorkItemsIds -eq $null) {
+		return $null
 	}
+	$myInProgressWorkItemsIdsInCommit = '#' + ($myInProgressWorkItemsIds -join " #")
 	if ($arguments.debug) {
 		Write-Host "myInProgressWorkItemsIdsInCommit: $myInProgressWorkItemsIdsInCommit" 
 	}
