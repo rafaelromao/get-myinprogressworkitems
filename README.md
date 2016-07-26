@@ -25,21 +25,9 @@ Insert the following lines to ensure you will have the default `curl` alias remo
 
 ```
 Import-Module Get-MyInProgressWorkItems
-
-if (test-path alias:curl) { remove-item alias:curl }
-if (test-path alias:curl) { remove-item alias:curl }
-if (test-path alias:curl) { remove-item alias:curl }
-if (test-path alias:curl) { remove-item alias:curl }
-
-if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
-if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
-if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
-if ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
-
-if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
-if ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
+while (test-path alias:curl) { remove-item alias:curl }
+while ((test-path alias:inpid) -eq $false) { new-alias inpid Get-MyInProgressWorkItems }
+while ((test-path alias:commit) -eq $false) { new-alias commit Submit-MyInProgressWorkItems }
 ```
 
 If you need to load your profile manually, enter: `. $profile`.
