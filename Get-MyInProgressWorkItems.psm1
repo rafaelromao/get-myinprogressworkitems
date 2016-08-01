@@ -37,7 +37,7 @@ function ParseArguments($input_args) {
 			$nextArg = $input_args[$i+1]
 		}
 
-		if ($arg -eq "--debug" -or $arg -eq "-D") {
+		if ($arg -eq "--debug") {
 			$result.debug = $true
 		}
 
